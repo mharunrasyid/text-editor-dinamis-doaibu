@@ -1,5 +1,5 @@
 #include "callista.c"
 
 void setStructEditor();
-void createEmptyLine();
+LineNode* createEmptyLine();
 void createFirstTab();
