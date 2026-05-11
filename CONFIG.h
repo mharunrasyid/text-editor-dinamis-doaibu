@@ -17,7 +17,6 @@
 #define SCREEN_HEIGHT 20
 #define MAX_PATH 260
 
-
 typedef struct CharNode CharNode;
 typedef struct LineNode LineNode;
 typedef struct TabNode TabNode;
@@ -57,8 +56,8 @@ struct TabNode {
 
     int targetX; // posisi x yang membantu proses arrow up/down
 
-    int cursorX; // kursor x
-    int cursorY; //kursor y
+    int cursorX; // kursor x tampilan
+    int cursorY; // kursor y tampilan
     int topIndex; // Nomor baris absolut untuk Line Numbering
 
     TabNode *next; // Pointer ke tab sebelah kanan 
