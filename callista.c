@@ -5,7 +5,7 @@ void setStructEditor() {
     E.activeTab = NULL; 
 }
 
-void createEmptyLine(){
+LineNode* createEmptyLine(){
     LineNode *newLine = (LineNode*)malloc(sizeof(LineNode));
     if (newLine != NULL){
         newLine->firstChar = NULL;
@@ -20,7 +20,7 @@ void createEmptyLine(){
     return newLine;
 }
 
-LineNode* createFirstTab() {
+void createFirstTab() {
     TabNode *newTab = (TabNode*)malloc(sizeof(TabNode));
     if (newTab != NULL) {
         strcpy(newTab->fileName, "Untitled");
