@@ -3,3 +3,4 @@
 void setStructEditor();
 LineNode* createEmptyLine();
 void createFirstTab();
+void renderHeader();
