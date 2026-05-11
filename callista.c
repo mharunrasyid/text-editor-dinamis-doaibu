@@ -20,7 +20,7 @@ void createEmptyLine(){
     return newLine;
 }
 
-void createFirstTab() {
+LineNode* createFirstTab() {
     TabNode *newTab = (TabNode*)malloc(sizeof(TabNode));
     if (newTab != NULL) {
         strcpy(newTab->fileName, "Untitled");
