@@ -49,7 +49,12 @@ void arrowKeyHandler(TabNode **TT,int c);
 
 void insert(TabNode *TT, int c);
 
+void DelokasiTab(TabNode *TT);
+void DelokasiLine(LineNode *LL);
+void DelokasiChar(CharNode *CC);
 
+void delete(TabNode *TT);
+void merge(LineNode *LL, int gap);
 
 
 
