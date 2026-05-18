@@ -13,8 +13,8 @@
 #include <ctype.h>
 
 #define MAX_TABS 5
-#define SCREEN_WIDTH 100
-#define SCREEN_HEIGHT 20
+#define SCREEN_WIDTH 5
+#define SCREEN_HEIGHT 5
 #define MAX_PATH 260
 
 typedef struct CharNode CharNode;
@@ -48,17 +48,16 @@ struct LineNode {
 struct TabNode { 
     char fileName[MAX_PATH]; // Nama file untuk ditampilkan di tab bar 
     LineNode *firstLine; // Head dari seluruh baris dalam dokumen 
-
     // POSISI KURSOR (Penting disimpan per tab agar tidak hilang saat pindah tab) 
     LineNode *currLine; // Baris tempat kursor berada 
     CharNode *currChar; // Node karakter spesifik tempat kursor berada 
     LineNode *topLine; // Baris paling atas yang nampak di layar (Viewport)
 
-    int targetX; // posisi x yang membantu proses arrow up/down
+    int targetX; // posisi x yang membantu proses arrow up/down nanti untuk nanti buat kebawahnya
 
     int cursorX; // kursor x tampilan
     int cursorY; // kursor y tampilan
-    int topIndex; // Nomor baris absolut untuk Line Numbering
+    int topIndex; // Nomor baris absolut untuk Line Numbering// untuk sekarang dapat berapa
 
     TabNode *next; // Pointer ke tab sebelah kanan 
     TabNode *prev; // Pointer ke tab sebelah kiri 
@@ -68,6 +67,8 @@ struct TabNode {
 
 struct Editor { 
     TabNode *activeTab; // Tab yang sedang tampil di layar 
+    int n_tabs;
+    int curr_tab;
 };
 
 // Var Global
