@@ -193,29 +193,47 @@ void renderScroll(TabNode *TT) {
 void arrowKeyHandler(TabNode **TT,int c) {
     switch (c) {  
         // arrow up
-        // case 72 : {
-        //     // ini mmasih perlu dikembangin lagi
-        //     if(TT->cursor_y> 0) {
-        //         if (TT->text[TT->cursor_y-1][TT->cursor_x] != '\0') TT->cursor_y--;
-        //         else {
-        //             setPosToNTRow(TT, TT->cursor_y-1, 'd');
-        //         }
-        //     }
+        case 72 : {
+            if ((*TT)->currLine != NULL && (*TT)->currLine->up != NULL) {
+                (*TT)->currLine = (*TT)->currLine->up;
+                (*TT)->cursorY--;
 
-        //     break;
-        // }
+                if ((*TT)->targetX > (*TT)->currLine->length + 1) {
+                    (*TT)->cursorX = (*TT)->currLine->length + 1;
+                } else {
+                    (*TT)->cursorX = (*TT)->targetX;
+                }
+
+                (*TT)->currChar = NULL;
+                CharNode *temp = (*TT)->currLine->firstChar;
+                for (int i = 1; i < (*TT)->cursorX && temp != NULL; i++) {
+                    (*TT)->currChar = temp;
+                    temp = temp->next;
+                }
+            }
+            break;
+        }
 
         // arrow down
-        // case 80 : {
-        //     if(TT->cursor_y < MAX_ROWS - 1) {
-        //         if (TT->text[TT->cursor_y+1][TT->cursor_x] != '\0') TT->cursor_y++;
-        //         else {
-        //             setPosToNTRow(TT, TT->cursor_y+1, 'u');
-        //         }
-        //     }
-            
-        //     break;
-        // }
+        case 80 : {
+            if ((*TT)->currLine != NULL && (*TT)->currLine->down != NULL) {
+                (*TT)->currLine = (*TT)->currLine->down;
+                (*TT)->cursorY++;
+                if ((*TT)->targetX > (*TT)->currLine->length + 1) {
+                    (*TT)->cursorX = (*TT)->currLine->length + 1;
+                } else {
+                    (*TT)->cursorX = (*TT)->targetX;
+                }
+
+                (*TT)->currChar = NULL;
+                CharNode *temp = (*TT)->currLine->firstChar;
+                for (int i = 1; i < (*TT)->cursorX && temp != NULL; i++) {
+                    (*TT)->currChar = temp;
+                    temp = temp->next;
+                }
+            }
+            break;
+        }
 
         // arrow left 
         case 75 : {
