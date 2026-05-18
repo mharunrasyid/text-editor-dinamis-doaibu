@@ -67,7 +67,9 @@ struct TabNode {
 // Struct Editor
 
 struct Editor { 
-    TabNode *activeTab; // Tab yang sedang tampil di layar 
+    TabNode *activeTab;
+    int n_tabs;         
+    int curr_tab; 
 };
 
 // Var Global
