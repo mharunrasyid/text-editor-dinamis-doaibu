@@ -32,7 +32,7 @@ void resetTab(TabNode *TT) {
     TT->currChar = NULL;
     TT->topLine = NULL;
 
-    TT->diKursorX = 1;
+    TT->cursorX = 1;
     TT->cursorX = 1;
     TT->cursorY = 1;
     TT->topIndex = 1;
@@ -264,13 +264,13 @@ void arrowKeyHandler(TabNode **TT,int c) {
             } 
 
             (*TT)->cursorX--;
-            (*TT)->diKursorX = (*TT)->cursorX;
+            (*TT)->cursorX = (*TT)->cursorX;
         } else if(LL != NULL && LL->up != NULL) {
             (*TT)->currLine = LL->up;
             (*TT)->currChar = LL->up->lastChar; 
             (*TT)->cursorY--;
             (*TT)->cursorX = LL->up->length + 1;
-            (*TT)->diKursorX = (*TT)->cursorX;
+            (*TT)->cursorX = (*TT)->cursorX;
         }
         
         break;
@@ -287,13 +287,13 @@ void arrowKeyHandler(TabNode **TT,int c) {
                     (*TT)->currChar = (*TT)->currChar->next;
                 }
                 (*TT)->cursorX++;
-                (*TT)->diKursorX = (*TT)->cursorX;
+                (*TT)->cursorX = (*TT)->cursorX;
             } else if(LL->down != NULL) {
                 (*TT)->currLine = LL->down;
                 (*TT)->currChar = NULL;
                 (*TT)->cursorY++;
                 (*TT)->cursorX = 1;
-                (*TT)->diKursorX = 1;
+                (*TT)->cursorX = 1;
             }
             
             break;

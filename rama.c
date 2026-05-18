@@ -102,8 +102,7 @@ void handleOverflow(TabNode *TT, LineNode *line) {
     pindah->prev = NULL;
     line->length--;
 
-    //--- PERBAIKAN LOGIKA KURSOR KE KOLOM 2 ---
-    // Cek apakah kursor pengguna berada di karakter yang sedang dipindahkan
+
     if (TT->currChar == pindah) {
         TT->currLine = lineSelanjutnya;
         TT->currChar = pindah; // Kursor tetap memegang karakter yang pindah
@@ -111,20 +110,7 @@ void handleOverflow(TabNode *TT, LineNode *line) {
         TT->cursorX = 2;       // Kursor sekarang berada di kolom 2 (setelah karakter pertama)
         TT->targetX = TT->cursorX;
     } 
-// Antisipasi jika kursor visual Anda sudah terlanjur melewati batas layar
-//    else if (TT->currLine == line && TT->cursorX > line->length + 1) {
-//        TT->currLine = next;
-//        TT->currChar = pindah;
-//        TT->cursorY++;
-//        TT->cursorX = 2;
-//        TT->targetX = TT->cursorX;
-//    }
-//------------------------------------------
 
-// Reset pointer dari node yang dipindahkan agar bersih sebelum ditempel
-//    pindah->prev = NULL;
-//    pindah->next = NULL;
-// Sisip di awal baris berikutnya
     if (lineSelanjutnya->firstChar == NULL) {
         lineSelanjutnya->firstChar = pindah;
         lineSelanjutnya->lastChar  = pindah;
