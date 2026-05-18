@@ -58,33 +58,6 @@ void clearRows(int start, int end, int width) {
     }
 }
 
-// RENDER
-void renderHeader() {
-    printf("\033[1;1H\033[K"); 
-    printf(" [DOA IBU'S EDITOR]  |  ");
-
-    TabNode *tempTab = E.activeTab; 
-    if (tempTab == NULL) {
-        printf("No Tabs Open");
-        return;
-    }
-
-    while (tempTab->prev != NULL) {
-        tempTab = tempTab->prev; 
-    }
-
-    while (tempTab != NULL) {
-        if (tempTab == E.activeTab) {
-            printf("\033[1;32m[%s *]\033[0m ", tempTab->fileName); 
-        } else {
-            printf("[%s] ", tempTab->fileName); 
-        }
-        tempTab = tempTab->next; 
-    }
-    printf("\n\033[K----------------------------------------------------------------------\n");
-    fflush(stdout);
-}
-
 void redrawText(TabNode *TT) {
     if (TT == NULL) return;
 
@@ -160,6 +133,31 @@ void moveCursor(int row, int col) {
 }
 
 // RENDER
+void renderHeader() {
+    printf("\033[1;1H\033[K"); 
+    printf(" [DOA IBU'S EDITOR]  |  ");
+
+    TabNode *tempTab = E.activeTab; 
+    if (tempTab == NULL) {
+        printf("No Tabs Open");
+        return;
+    }
+
+    while (tempTab->prev != NULL) {
+        tempTab = tempTab->prev; 
+    }
+
+    while (tempTab != NULL) {
+        if (tempTab == E.activeTab) {
+            printf("\033[1;32m[%s *]\033[0m ", tempTab->fileName); 
+        } else {
+            printf("[%s] ", tempTab->fileName); 
+        }
+        tempTab = tempTab->next; 
+    }
+    printf("\n\033[K----------------------------------------------------------------------\n");
+    fflush(stdout);
+}
 
 void renderScroll(TabNode *TT) {
     if (TT == NULL) return;
@@ -181,7 +179,6 @@ void renderScroll(TabNode *TT) {
         currentLine = currentLine->down;
         screenRow++;
     }
-
 
     while (screenRow <= SCREEN_HEIGHT) {
         moveCursor(screenRow, 1);
