@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "CONFIG.h"
 
 void setStructEditor() {
