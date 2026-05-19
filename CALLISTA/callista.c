@@ -1,49 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "CONFIG.h"
+#include "../CONFIG.h"
+#include "../RASYID/RASYID.h"
+#include "../RAMA/rama.h"
+#include "callista.h"
 
-void setStructEditor() {
-    E.activeTab = NULL; 
-}
-
-// cek apakah CTRL ditekan
-int isCtrlPressed() {
-    return (GetAsyncKeyState(VK_CONTROL) & 0x8000);
-}
-
-// cek apakah ALT ditekan
-int isAltPressed() {
-    return (GetAsyncKeyState(VK_MENU) & 0x8000);
-}
-
-LineNode* createEmptyLine(){
-    LineNode *newLine = (LineNode*)malloc(sizeof(LineNode));
-    if (newLine != NULL){
-        newLine->firstChar = NULL;
-        newLine->lastChar = NULL;
-
-        newLine->up = NULL;        
-        newLine->down = NULL;
-
-        newLine->length = 0;      
-        newLine->isNewLine = true;
-    }
-    return newLine;
-}
-
-void createFirstTab() {
-    TabNode *newTab = (TabNode*)malloc(sizeof(TabNode));
-    if (newTab != NULL) {
-        strcpy(newTab->fileName, "Untitled");
-        newTab->firstLine = createEmptyLine();
-        newTab->currLine = newTab->firstLine;
-        newTab->topLine = newTab->firstLine;
-        newTab->currChar = NULL;
-        newTab->next = newTab->prev = NULL;
-        
-        E.activeTab = newTab;
-    }
-}
 
 // CLEAR
 
@@ -52,7 +13,8 @@ void clearScreen() {
 }
 
 void clearRows(int start, int end, int width) {
-    for(int r = start; r <= end; r++) {
+    int r;
+    for(r = start; r <= end; r++) {
         printf("\033[%d;1H", r);
         printf("%*s", width, "");
     }
@@ -82,54 +44,6 @@ void redrawText(TabNode *TT) {
     moveCursor(TT->cursorY, TT->cursorX); 
     
     showCursor();
-}
-
-// RESET
-
-void resetTab(TabNode *TT) {
-    TT->fileName[0] = '\0';
-
-    TT->currLine = NULL;
-    TT->currChar = NULL;
-    TT->topLine = NULL;
-
-    TT->targetX = 1;
-    TT->cursorX = 1;
-    TT->cursorY = 1;
-    TT->topIndex = 1;
-
-    TT->next = NULL;
-    TT->prev = NULL;
-}
-
-void resetLine(LineNode *LL) {
-    LL->firstChar = NULL;
-    LL->lastChar = NULL;
-    LL->up = NULL;
-    LL->down = NULL;
-
-    LL->length = 0;
-    LL->isNewLine = false;
-}
-
-void resetChar(CharNode *CC) {
-    CC->data = '\0';
-    CC->next = NULL;
-    CC->prev = NULL;
-}
-
-// CURSOR
-
-void hideCursor() {
-    printf("\033[?25l");
-}
-
-void showCursor() {
-    printf("\033[?25h");
-}
-
-void moveCursor(int row, int col) {
-    printf("\033[%d;%dH", row + 2, col);
 }
 
 // RENDER
@@ -187,6 +101,61 @@ void renderScroll(TabNode *TT) {
     }
 }
 
+// CURSOR
+
+void hideCursor() {
+    printf("\033[?25l");
+}
+
+void showCursor() {
+    printf("\033[?25h");
+}
+
+void moveCursor(int row, int col) {
+    printf("\033[%d;%dH", row + 2, col);
+}
+
+// cek apakah CTRL ditekan
+int isCtrlPressed() {
+    return (GetAsyncKeyState(VK_CONTROL) & 0x8000);
+}
+
+// cek apakah ALT ditekan
+int isAltPressed() {
+    return (GetAsyncKeyState(VK_MENU) & 0x8000);
+}
+
+// INPUT HANDLER
+
+void inputCharHandler(TabNode **TT, int c) {
+    switch (c) { 
+        case 13: // TOMBOL ENTER
+            newline(*TT);
+            redrawText(*TT);
+            break;
+        case 8:
+            delete(*TT);
+            redrawText(*TT);    
+			break;        
+        case 19: // TOMBOL CTRL + S (Save Menanyakan)
+            saveFile(*TT);
+            break;
+
+        default:
+
+            // add character
+            if (c >= 32 && c <= 126) {
+                if (!isAltPressed()) {
+                    insert(*TT, c);
+                    redrawText(*TT);
+                }
+            }
+
+            break;
+
+    }
+}
+
 void arrowKeyHandler(TabNode **TT,int c) {
     switch (c) {  
         // arrow up
@@ -203,7 +172,8 @@ void arrowKeyHandler(TabNode **TT,int c) {
 
                 (*TT)->currChar = NULL;
                 CharNode *temp = (*TT)->currLine->firstChar;
-                for (int i = 1; i < (*TT)->cursorX && temp != NULL; i++) {
+                int i;
+                for (i = 1; i < (*TT)->cursorX && temp != NULL; i++) {
                     (*TT)->currChar = temp;
                     temp = temp->next;
                 }
@@ -224,7 +194,8 @@ void arrowKeyHandler(TabNode **TT,int c) {
 
                 (*TT)->currChar = NULL;
                 CharNode *temp = (*TT)->currLine->firstChar;
-                for (int i = 1; i < (*TT)->cursorX && temp != NULL; i++) {
+                int i;
+                for (i = 1; i < (*TT)->cursorX && temp != NULL; i++) {
                     (*TT)->currChar = temp;
                     temp = temp->next;
                 }
