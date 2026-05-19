@@ -1,5 +1,7 @@
-#include "CONFIG.h"
-#include "rasyid.h"
+#include "./CONFIG.h"
+#include "./RASYID/RASYID.h"
+#include "./RAMA/rama.h"
+#include "./CALLISTA/callista.h"
 
 Editor E;
 
@@ -17,7 +19,6 @@ int main() {
         if (c == 0 || c == 224) {
             c = _getch();
             arrowKeyHandler(TT, c);
-
         } else {
             inputCharHandler(TT, c);
         }
