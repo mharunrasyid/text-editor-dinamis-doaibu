@@ -259,3 +259,21 @@ void arrowKeyHandler(TabNode **TT,int c) {
         moveCursor((*TT)->cursorY, (*TT)->cursorX);
     }
 }
+
+// Quit Editor
+void quitEditor() {
+    char confirm;
+        if (E.activeTab != NULL) {
+            clearScreen();
+            printf("You have unsaved changes. Are you sure you want to quit? (y/n): ");
+            scanf(" %c", &confirm);
+            if (confirm != 'y' && confirm != 'Y') {
+                return; 
+            }
+        }
+        else {
+            clearScreen();
+            printf("Exiting Doa Ibu's Editor. Goodbye!\n");
+        }
+    exit(0);
+}
