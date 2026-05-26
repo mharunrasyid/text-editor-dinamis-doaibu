@@ -131,10 +131,12 @@ void inputCharHandler(TabNode **TT, int c) {
     switch (c) { 
         case 13: // TOMBOL ENTER
             newline(*TT);
+            (*TT)->isModified = true;
             redrawText(*TT);
             break;
         case 8:
             delete(*TT);
+            (*TT)->isModified = true;
             redrawText(*TT);    
 			break;        
         case 19: // TOMBOL CTRL + S (Save Menanyakan)
@@ -147,12 +149,11 @@ void inputCharHandler(TabNode **TT, int c) {
             if (c >= 32 && c <= 126) {
                 if (!isAltPressed()) {
                     insert(*TT, c);
+                    (*TT)->isModified = true;
                     redrawText(*TT);
                 }
             }
-
             break;
-
     }
 }
 
@@ -259,54 +260,83 @@ void arrowKeyHandler(TabNode **TT,int c) {
 
 // Load File
 void loadFile() {
-    char fileName[MAX_PATH]; 
-    clearScreen(); 
+    char fileName[MAX_PATH];
+    clearScreen();
     printf("Enter the file name to load: ");
-    
-    fgets(fileName, sizeof(fileName), stdin); 
+    fgets(fileName, sizeof(fileName), stdin);
     fileName[strcspn(fileName, "\n")] = 0;
-    TabNode *temp = E.activeTab; 
-    if (temp != NULL) {
-        while (temp->prev != NULL) {
-            temp = temp->prev; 
-        }
 
+    if (strlen(fileName) == 0) {
+        printf("[Error] Filename is still empty.\n");
+        return;
+    }
+
+    TabNode *temp = E.activeTab;
+    if (temp != NULL) {
+        while (temp->prev != NULL) temp = temp->prev;
         while (temp != NULL) {
-            if (strcmp(temp->fileName, fileName) == 0) { 
-                E.activeTab = temp; 
-                renderHeader(); 
-                redrawText(E.activeTab); 
-                printf("\n[Info] File '%s' has been opened, switching to that tab.\n", fileName);
-                return; 
+            if (strcmp(temp->fileName, fileName) == 0) {
+                E.activeTab = temp;
+                renderHeader();
+                redrawText(E.activeTab);
+                printf("\n[Info] File '%s' has been opened. Switching tab. \n", fileName);
+                return;
             }
-            temp = temp->next; 
+            temp = temp->next;
         }
     }
-    TabNode *newTab = createTab(fileName); 
+    if (E.n_tabs >= MAX_TABS) {
+        printf("[Error] Maximum tab (%d) reached. Close a tab first.\n", MAX_TABS);
+        return;
+    }
+    FILE *check = fopen(fileName, "r");
+    if (check == NULL) {
+        printf("[Error] File '%s' not found.\n", fileName);
+        return;
+    }
+    
+    fclose(check);
+
+    TabNode *newTab = createTab(fileName);
     if (newTab != NULL) {
-        addTab(newTab); 
-        E.activeTab = newTab; 
-        renderHeader(); 
-        redrawText(E.activeTab); 
+        newTab->isModified = false;  
+        addTab(newTab);
+        E.activeTab = newTab;
+        renderHeader();
+        redrawText(E.activeTab);
     } else {
-        printf("Failed to load file: %s\n", fileName);
+        printf("[Error] Failed to open file: %s\n", fileName);
     }
 }
 
-// Quit Editor
 void quitEditor() {
-    char confirm;
-        if (E.activeTab != NULL) {
-            clearScreen();
-            printf("You have unsaved changes. Are you sure you want to quit? (y/n): ");
-            scanf(" %c", &confirm);
-            if (confirm != 'y' && confirm != 'Y') {
-                return; 
-            }
+    char input[8];
+
+    TabNode *temp = E.activeTab;
+    if (temp != NULL) {
+        while (temp->prev != NULL) temp = temp->prev;
+    }
+
+    bool anyUnsaved = false;
+    TabNode *check = temp;
+    while (check != NULL) {
+        if (check->isModified) {
+            anyUnsaved = true;
+            break;
         }
-        else {
-            clearScreen();
+        check = check->next;
+    }
+
+    if (anyUnsaved) {
+        clearScreen();
+        printf("[Warning] Unsaved changes!\n");
+        printf("Proceed to exit? (y/n): ");
+        fgets(input, sizeof(input), stdin);
+        if (input[0] != 'y' && input[0] != 'Y') {
+            return;
         }
-        printf("Exiting Doa Ibu's Editor. Goodbye!\n");
+    }
+    clearScreen();
+    printf("Exiting Doa Ibu's Editor. See you later!\n");
     exit(0);
 }

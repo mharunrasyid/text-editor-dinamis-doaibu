@@ -59,6 +59,8 @@ struct TabNode {
     int cursorY; // kursor y tampilan
     int topIndex; // Nomor baris absolut untuk Line Numbering
 
+     bool isModified; // Flag untuk menandai apakah tab sudah dimodifikasi sejak terakhir disimpan
+
     TabNode *next; // Pointer ke tab sebelah kanan 
     TabNode *prev; // Pointer ke tab sebelah kiri 
 };
