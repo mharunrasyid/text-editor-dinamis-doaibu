@@ -244,11 +244,8 @@ void arrowKeyHandler(TabNode **TT,int c) {
                 (*TT)->cursorX = 1;
                 (*TT)->targetX = 1;
             }
-            
             break;
         }
-            
-        
         default:
             break;
     }
@@ -257,6 +254,42 @@ void arrowKeyHandler(TabNode **TT,int c) {
         redrawText(*TT);
     } else {
         moveCursor((*TT)->cursorY, (*TT)->cursorX);
+    }
+}
+
+// Load File
+void loadFile() {
+    char fileName[MAX_PATH]; 
+    clearScreen(); 
+    printf("Enter the file name to load: ");
+    
+    fgets(fileName, sizeof(fileName), stdin); 
+    fileName[strcspn(fileName, "\n")] = 0;
+    TabNode *temp = E.activeTab; 
+    if (temp != NULL) {
+        while (temp->prev != NULL) {
+            temp = temp->prev; 
+        }
+
+        while (temp != NULL) {
+            if (strcmp(temp->fileName, fileName) == 0) { 
+                E.activeTab = temp; 
+                renderHeader(); 
+                redrawText(E.activeTab); 
+                printf("\n[Info] File '%s' has been opened, switching to that tab.\n", fileName);
+                return; 
+            }
+            temp = temp->next; 
+        }
+    }
+    TabNode *newTab = createTab(fileName); 
+    if (newTab != NULL) {
+        addTab(newTab); 
+        E.activeTab = newTab; 
+        renderHeader(); 
+        redrawText(E.activeTab); 
+    } else {
+        printf("Failed to load file: %s\n", fileName);
     }
 }
 
@@ -273,7 +306,7 @@ void quitEditor() {
         }
         else {
             clearScreen();
-            printf("Exiting Doa Ibu's Editor. Goodbye!\n");
         }
+        printf("Exiting Doa Ibu's Editor. Goodbye!\n");
     exit(0);
 }
