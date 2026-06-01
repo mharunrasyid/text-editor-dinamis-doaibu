@@ -367,7 +367,6 @@ void replaceAll(TabNode *TT, const char *oldWord, const char *newWord) {
                     delete(TT);
                 }
 
-                // insert kata baru
                 for (i = 0; i < strlen(newWord); i++) {
                     insert(TT, newWord[i]);
                 }

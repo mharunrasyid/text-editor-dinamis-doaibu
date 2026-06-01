@@ -21,4 +21,13 @@ void renderScroll(TabNode *TT);
 void inputCharHandler(TabNode **TT, int c);
 void arrowKeyHandler(TabNode **TT,int c);
 
+void readFile(TabNode *TT, const char *fileName);
+void loadFile();
+
+void replaceOne(TabNode *TT, const char *oldWord, const char *newWord);
+void replaceAll(TabNode *TT, const char *oldWord, const char *newWord);
+void replaceHandler(TabNode **TT);
+
+void quitEditor();
+
 #endif
