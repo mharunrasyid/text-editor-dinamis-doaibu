@@ -77,7 +77,6 @@ void resetChar(CharNode *CC) {
 void addTab(Editor *E, TabNode *TT) {
 	if(E->n_tabs >= MAX_TABS) return; 
 
-    TabNode *TT = AlokasiTab();
     LineNode *LL = AlokasiLine();
 
     if(TT == NULL || LL == NULL) {
