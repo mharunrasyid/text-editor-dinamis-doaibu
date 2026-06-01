@@ -51,6 +51,8 @@ void resetTab(TabNode *TT) {
     TT->cursorY = 1;
     TT->topIndex = 1;
 
+    TT->isModified = false;
+
     TT->next = NULL;
     TT->prev = NULL;
 }
@@ -72,7 +74,7 @@ void resetChar(CharNode *CC) {
 }
 
 //addtab
-void addTab(Editor *E) {
+void addTab(Editor *E, TabNode *TT) {
 	if(E->n_tabs >= MAX_TABS) return; 
 
     TabNode *TT = AlokasiTab();
@@ -304,6 +306,7 @@ void saveFile(TabNode *TT) {
     }
 
     fclose(file);
+    TT->isModified = false;
     moveCursor(TT->cursorY, TT->cursorX);
 }
 
@@ -316,7 +319,7 @@ void saveAs(TabNode *TT) {
     char namaFileBaru[260];
 
     clearScreen();
-    renderHeader(&E);
+    renderHeader();
     moveCursor(1, 1);
     printf("Masukkan nama file baru (contoh: rama.txt): wajib menggunakan ekstensi.txt");
     scanf(" %259s", namaFileBaru);
@@ -341,6 +344,7 @@ void saveAs(TabNode *TT) {
     }
 
     fclose(file);
+    TT->isModified = false;
     strcpy(TT->fileName, namaFileBaru);
     moveCursor(TT->cursorY, TT->cursorX);
 }

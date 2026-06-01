@@ -6,11 +6,11 @@
 Editor E;
 
 int main() {
-    setStructEditor(&E);
-    addTab(&E);
+    setStructEditor();
+    addTab(&E, newTab());
 
     clearScreen();
-    renderHeader(&E);
+    renderHeader();
 
     while(1) {
         int c = _getch();

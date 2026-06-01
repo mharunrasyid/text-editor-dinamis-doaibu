@@ -450,7 +450,7 @@ void loadFile() {
     TabNode *newTab = createTab(fileName);
     if (newTab != NULL) {
         newTab->isModified = false;  
-        addTab(newTab);
+        addTab(&E, newTab);
         readFile(newTab, fileName);
         E.activeTab = newTab;
         renderHeader();
