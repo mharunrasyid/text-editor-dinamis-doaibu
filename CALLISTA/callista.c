@@ -273,12 +273,10 @@ void readFile(TabNode *TT, const char *fileName) {
         if (c == '\n') {
             newline(TT);
         } else if (c >= 32 && c <= 126) {
-            // hanya baca karakter yang printable
             insert(TT, (char)c);
         }
     }
 
-    // setelah selesai baca, kembalikan kursor ke awal
     TT->currLine = TT->firstLine;
     TT->currChar = NULL;
     TT->cursorX  = 1;
@@ -291,6 +289,21 @@ void readFile(TabNode *TT, const char *fileName) {
 
     fclose(file);
 }
+
+// Match Word for Replace
+static CharNode *matchWord(CharNode *cc, const char *word) {
+    CharNode *temp = cc;
+    int i;
+    for (i = 0; i < strlen(word); i++) {
+        if (temp == NULL || tolower(temp->data) != tolower(word[i])) {
+            return NULL;
+        }
+        temp = temp->next;
+    }
+    return temp; 
+}
+
+
 
 // Load File
 void loadFile() {
