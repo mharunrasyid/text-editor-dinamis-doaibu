@@ -381,7 +381,36 @@ void replaceAll(TabNode *TT, const char *oldWord, const char *newWord) {
     TT->isModified = true;
 }
 
+void replaceHandler(TabNode **TT) {
+    char oldWord[100];
+    char newWord[100];
+    char pilihan[4];
 
+    clearScreen();
+    printf("=== FIND & REPLACE ===\n");
+    printf("Kata yang dicari  : ");
+    fgets(oldWord, sizeof(oldWord), stdin);
+    oldWord[strcspn(oldWord, "\n")] = 0;
+
+    printf("Kata pengganti    : ");
+    fgets(newWord, sizeof(newWord), stdin);
+    newWord[strcspn(newWord, "\n")] = 0;
+
+    printf("Replace (o)ne / (a)ll? : ");
+    fgets(pilihan, sizeof(pilihan), stdin);
+
+    if (pilihan[0] == 'o' || pilihan[0] == 'O') {
+        replaceOne(*TT, oldWord, newWord);
+    } else if (pilihan[0] == 'a' || pilihan[0] == 'A') {
+        replaceAll(*TT, oldWord, newWord);
+    } else {
+        printf("[Info] Dibatalkan.\n");
+        return;
+    }
+
+    renderHeader();
+    redrawText(*TT);
+}
 
 // Load File
 void loadFile() {
