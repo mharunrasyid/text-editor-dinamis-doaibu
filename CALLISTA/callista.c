@@ -345,6 +345,44 @@ void replaceOne(TabNode *TT, const char *oldWord, const char *newWord) {
     }
 }
 
+void replaceAll(TabNode *TT, const char *oldWord, const char *newWord) {
+    if (TT == NULL || oldWord == NULL || newWord == NULL) return;
+
+    int oldLen = strlen(oldWord);
+    LineNode *line = TT->firstLine;
+
+    while (line != NULL) {
+        CharNode *cc = line->firstChar;
+
+        while (cc != NULL) {
+            if (matchWord(cc, oldWord) != NULL) {
+                TT->currLine = line;
+                TT->currChar = cc->prev;
+
+                int i;
+                for (i = 0; i < oldLen; i++) {
+                    TT->currChar = cc;
+                    CharNode *toDelete = cc;
+                    cc = cc->next;
+                    delete(TT);
+                }
+
+                // insert kata baru
+                for (i = 0; i < strlen(newWord); i++) {
+                    insert(TT, newWord[i]);
+                }
+            } else {
+                cc = cc->next;
+            }
+        }
+        line = line->down;
+    }
+
+    TT->isModified = true;
+}
+
+
+
 // Load File
 void loadFile() {
     char fileName[MAX_PATH];
