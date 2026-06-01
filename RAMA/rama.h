@@ -2,7 +2,6 @@
 #define rama_h
 
 #include "../CONFIG.h"
-#include "../RASYID/RASYID.h"
 
 void setStructEditor();
 
@@ -28,6 +27,8 @@ void newline(TabNode *TT);
 void addLine(TabNode *TT, LineNode *diKursor);
 
 //savefile
+int namaFileIlegal(char *nama);
+void tulisIsiFile(FILE *file, TabNode *TT);
 void saveFile(TabNode *TT);
 void saveAs(TabNode *TT);
 

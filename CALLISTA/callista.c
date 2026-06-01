@@ -139,6 +139,9 @@ void inputCharHandler(TabNode **TT, int c) {
         case 19: // TOMBOL CTRL + S (Save Menanyakan)
             saveFile(*TT);
             break;
+        case 1: // TOMBOL CTRL + A (Save As) <--- TAMBAHKAN INI
+            saveAs(*TT);
+            break;
 
         default:
 
