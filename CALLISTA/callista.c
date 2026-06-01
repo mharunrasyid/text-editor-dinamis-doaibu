@@ -381,17 +381,15 @@ void replaceAll(TabNode *TT, const char *oldWord, const char *newWord) {
 }
 
 void replaceHandler(TabNode **TT) {
-    char oldWord[100];
+    if (strlen(E.findKeyword) == 0) {
+        printf("[Info] Lakukan Find dulu sebelum Replace.\n");
+        return;
+    }
+
     char newWord[100];
     char pilihan[4];
 
-    clearScreen();
-    printf("=== FIND & REPLACE ===\n");
-    printf("Kata yang dicari  : ");
-    fgets(oldWord, sizeof(oldWord), stdin);
-    oldWord[strcspn(oldWord, "\n")] = 0;
-
-    printf("Kata pengganti    : ");
+    printf("Kata pengganti: ");
     fgets(newWord, sizeof(newWord), stdin);
     newWord[strcspn(newWord, "\n")] = 0;
 
@@ -399,13 +397,12 @@ void replaceHandler(TabNode **TT) {
     fgets(pilihan, sizeof(pilihan), stdin);
 
     if (pilihan[0] == 'o' || pilihan[0] == 'O') {
-        replaceOne(*TT, oldWord, newWord);
+        replaceOne(*TT, E.findKeyword, newWord);
     } else if (pilihan[0] == 'a' || pilihan[0] == 'A') {
-        replaceAll(*TT, oldWord, newWord);
-    } else {
-        printf("[Info] Dibatalkan.\n");
-        return;
+        replaceAll(*TT, E.findKeyword, newWord);
     }
+
+    E.findKeyword[0] = '\0';
 
     renderHeader();
     redrawText(*TT);

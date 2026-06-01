@@ -71,6 +71,7 @@ struct Editor {
     TabNode *activeTab; // Tab yang sedang tampil di layar 
     int n_tabs;
     int curr_tab;
+    char findKeyword[100];
 };
 
 // Var Global
