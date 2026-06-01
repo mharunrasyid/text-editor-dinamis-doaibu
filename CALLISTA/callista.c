@@ -258,6 +258,40 @@ void arrowKeyHandler(TabNode **TT,int c) {
     }
 }
 
+// Read File
+void readFile(TabNode *TT, const char *fileName) {
+    if (TT == NULL) return;
+
+    FILE *file = fopen(fileName, "r");
+    if (file == NULL) {
+        printf("[Error] Gagal membuka file: %s\n", fileName);
+        return;
+    }
+
+    int c;
+    while ((c = fgetc(file)) != EOF) {
+        if (c == '\n') {
+            newline(TT);
+        } else if (c >= 32 && c <= 126) {
+            // hanya baca karakter yang printable
+            insert(TT, (char)c);
+        }
+    }
+
+    // setelah selesai baca, kembalikan kursor ke awal
+    TT->currLine = TT->firstLine;
+    TT->currChar = NULL;
+    TT->cursorX  = 1;
+    TT->cursorY  = 1;
+    TT->targetX  = 1;
+    TT->topLine  = TT->firstLine;
+    TT->topIndex = 1;
+
+    TT->isModified = false;
+
+    fclose(file);
+}
+
 // Load File
 void loadFile() {
     char fileName[MAX_PATH];
@@ -301,6 +335,7 @@ void loadFile() {
     if (newTab != NULL) {
         newTab->isModified = false;  
         addTab(newTab);
+        readFile(newTab, fileName);
         E.activeTab = newTab;
         renderHeader();
         redrawText(E.activeTab);
