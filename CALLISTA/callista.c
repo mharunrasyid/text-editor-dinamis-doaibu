@@ -134,18 +134,20 @@ void inputCharHandler(TabNode **TT, int c) {
             (*TT)->isModified = true;
             redrawText(*TT);
             break;
-        case 8:
+        case 8: //CTRL + H (Backspace)
             delete(*TT);
             (*TT)->isModified = true;
             redrawText(*TT);    
-			break;        
+			break;    
+        case 18: // CTRL + R (Replace)
+            replaceHandler(TT);
+            break;    
         case 19: // TOMBOL CTRL + S (Save Menanyakan)
             saveFile(*TT);
             break;
+        
 
         default:
-
-            // add character
             if (c >= 32 && c <= 126) {
                 if (!isAltPressed()) {
                     insert(*TT, c);
@@ -303,7 +305,45 @@ static CharNode *matchWord(CharNode *cc, const char *word) {
     return temp; 
 }
 
+// Replace 
+void replaceOne(TabNode *TT, const char *oldWord, const char *newWord) {
+    if (TT == NULL || oldWord == NULL || newWord == NULL) return;
 
+    int oldLen = strlen(oldWord);
+    LineNode *line = TT->firstLine;
+
+    while (line != NULL) {
+        CharNode *cc = line->firstChar;
+
+        while (cc != NULL) {
+            CharNode *next = cc->next;
+
+            if (matchWord(cc, oldWord) != NULL) {
+
+                TT->currLine = line;
+                TT->currChar = cc->prev;
+                TT->cursorX  = TT->currChar == NULL ? 1 : TT->cursorX;
+
+                int i;
+                for (i = 0; i < oldLen; i++) {
+                    TT->currChar = cc;
+                    CharNode *toDelete = cc;
+                    cc = cc->next;
+                    delete(TT);
+                }
+
+                for (i = 0; i < strlen(newWord); i++) {
+                    insert(TT, newWord[i]);
+                }
+
+                TT->isModified = true;
+                return; 
+            }
+            cc = next;
+        }
+        line = line->down;
+    }
+}
 
 // Load File
 void loadFile() {
