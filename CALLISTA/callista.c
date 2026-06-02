@@ -447,12 +447,12 @@ void loadFile() {
     
     fclose(check);
 
-    TabNode *newTab = createTab(fileName);
-    if (newTab != NULL) {
-        newTab->isModified = false;  
-        addTab(&E, newTab);
-        readFile(newTab, fileName);
-        E.activeTab = newTab;
+    TabNode *resetTab = createTab(fileName);
+    if (resetTab != NULL) {
+        resetTab->isModified = false;  
+        addTab(&E, resetTab);
+        readFile(resetTab, fileName);
+        E.activeTab = resetTab;
         renderHeader();
         redrawText(E.activeTab);
     } else {

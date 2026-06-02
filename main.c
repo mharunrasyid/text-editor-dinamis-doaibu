@@ -7,7 +7,7 @@ Editor E;
 
 int main() {
     setStructEditor();
-    addTab(&E, newTab());
+    addTab(&E, resetTab());
 
     clearScreen();
     renderHeader();
