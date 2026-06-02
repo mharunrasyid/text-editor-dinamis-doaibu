@@ -6,6 +6,7 @@ void setStructEditor() {
     E.activeTab = NULL;
     E.n_tabs = 0;
     E.curr_tab = 0;
+    E.findKeyword[0]= '\0';
 }
 
 //alokasi
@@ -43,6 +44,7 @@ CharNode *AlokasiChar() {
 void resetTab(TabNode *TT) {
     TT->fileName[0] = '\0';
 
+    TT->firstLine = NULL;
     TT->currLine = NULL;
     TT->currChar = NULL;
     TT->topLine = NULL;
@@ -132,7 +134,7 @@ void insert(TabNode *TT, char c) {
         CharBaru->next = TT->currChar->next;
         TT->currChar->next->prev = CharBaru;
         TT->currChar->next = CharBaru;
-    }
+    } 
     // insert di akhir
     else {
         CharBaru->prev = TT->currChar;
@@ -274,59 +276,120 @@ void addLine(TabNode *TT, LineNode *Linetarget) {
 }
 
 //savefile
-void saveFile(TabNode *TT) {
-    if (TT == NULL || TT->firstLine == NULL) {
-        return;
+int namaFileIlegal(char *nama) {
+    if (nama == NULL || nama[0] == '\0')
+        return 1;
+
+    int i = 0;
+    while (nama[i] != '\0') {
+        if (nama[i] == '\\' || nama[i] == '/' ||
+            nama[i] == ':'  || nama[i] == '*' ||
+            nama[i] == '?'  || nama[i] == '"' ||
+            nama[i] == '<'  || nama[i] == '>' ||
+            nama[i] == '|')
+            return 1;
+
+        i++;
     }
 
-    if (TT->fileName[0] == '\0') {
-        clearScreen();
-        renderHeader(&E);
-        moveCursor(1, 1);
-        printf("Masukkan nama file untuk menyimpan (contoh: rama.txt): wajib mengunakan ekstensi .txt");
-        scanf(" %260s", TT->fileName); 
-    }
+    return 0;
+}
 
-    FILE *file = fopen(TT->fileName, "w");
-    if (file == NULL) {
-        redrawText(TT);
-        return;
-    }
-
+void tulisIsiFile(FILE *file, TabNode *TT) {
     LineNode *lineSekarang = TT->firstLine;
+
     while (lineSekarang != NULL) {
         CharNode *charSekarang = lineSekarang->firstChar;
+
         while (charSekarang != NULL) {
             fputc(charSekarang->data, file);
             charSekarang = charSekarang->next;
         }
-        if (lineSekarang->isNewLine && lineSekarang->down != NULL) {
+
+        if (lineSekarang->isNewLine == true &&
+            lineSekarang->down != NULL) {
             fputc('\n', file);
         }
+
         lineSekarang = lineSekarang->down;
     }
+}
 
+void saveFile(TabNode *TT) {
+    if (TT == NULL || TT->firstLine == NULL)
+        return;
+        
+    if (TT->fileName[0] == '\0') {
+        clearScreen();
+        renderHeader(&E);
+
+        moveCursor(1, 1);
+        printf("Masukkan nama file (contoh: rama.txt): ");
+
+        moveCursor(2, 1);
+        printf("Input: ");
+
+        scanf("%259s", TT->fileName);
+
+        if (namaFileIlegal(TT->fileName)) {
+            TT->fileName[0] = '\0';
+
+            moveCursor(4, 1);
+            printf("Error: Nama file mengandung karakter ilegal.");
+            getch();
+            return;
+        }
+    }
+
+    FILE *file = fopen(TT->fileName, "w");
+
+    if (file == NULL) {
+        moveCursor(4, 1);
+        printf("Gagal membuka file.");
+        getch();
+        redrawText(TT);
+        return;
+    }
+
+    tulisIsiFile(file, TT);
     fclose(file);
+
+    clearScreen();
+    renderHeader(&E);
+    redrawText(TT);
     TT->isModified = false;
     moveCursor(TT->cursorY, TT->cursorX);
 }
 
-
 void saveAs(TabNode *TT) {
-    if (TT == NULL || TT->firstLine == NULL) {
+    if (TT == NULL || TT->firstLine == NULL)
         return;
-    }
 
     char namaFileBaru[260];
 
     clearScreen();
-    renderHeader();
+    renderHeader(&E);
     moveCursor(1, 1);
-    printf("Masukkan nama file baru (contoh: rama.txt): wajib menggunakan ekstensi.txt");
-    scanf(" %259s", namaFileBaru);
+    printf("Masukkan nama file baru (contoh: rama.txt): ");
+
+    moveCursor(2, 1);
+    printf("Input: ");
+
+    scanf("%259s", namaFileBaru);
+
+    if (namaFileIlegal(namaFileBaru)) {
+        moveCursor(4, 1);
+        printf("Error: Nama file mengandung karakter ilegal.");
+        getch();
+        return;
+    }
 
     FILE *file = fopen(namaFileBaru, "w");
+
     if (file == NULL) {
+        moveCursor(4, 1);
+        printf("Gagal membuka file.");
+        getch();
         redrawText(TT);
         return;
     }
@@ -345,7 +408,6 @@ void saveAs(TabNode *TT) {
     }
 
     fclose(file);
-    TT->isModified = false;
     strcpy(TT->fileName, namaFileBaru);
     moveCursor(TT->cursorY, TT->cursorX);
 }

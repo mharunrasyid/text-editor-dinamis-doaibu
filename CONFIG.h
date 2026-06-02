@@ -53,11 +53,11 @@ struct TabNode {
     CharNode *currChar; // Node karakter spesifik tempat kursor berada 
     LineNode *topLine; // Baris paling atas yang nampak di layar (Viewport)
 
-    int targetX; // posisi x yang membantu proses arrow up/down
+    int targetX; // posisi x yang membantu proses arrow up/down nanti untuk nanti buat kebawahnya
 
     int cursorX; // kursor x tampilan
     int cursorY; // kursor y tampilan
-    int topIndex; // Nomor baris absolut untuk Line Numbering
+    int topIndex; // Nomor baris absolut untuk Line Numbering// untuk sekarang dapat berapa
 
      bool isModified; // Flag untuk menandai apakah tab sudah dimodifikasi sejak terakhir disimpan
 
