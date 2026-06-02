@@ -315,45 +315,6 @@ static CharNode *matchWord(CharNode *cc, const char *word) {
 }
 
 // Replace 
-void replaceOne(TabNode *TT, const char *oldWord, const char *newWord) {
-    if (TT == NULL || oldWord == NULL || newWord == NULL) return;
-
-    int oldLen = strlen(oldWord);
-    LineNode *line = TT->firstLine;
-
-    while (line != NULL) {
-        CharNode *cc = line->firstChar;
-
-        while (cc != NULL) {
-            CharNode *next = cc->next;
-
-            if (matchWord(cc, oldWord) != NULL) {
-
-                TT->currLine = line;
-                TT->currChar = cc->prev;
-                TT->cursorX  = TT->currChar == NULL ? 1 : TT->cursorX;
-
-                int i;
-                for (i = 0; i < oldLen; i++) {
-                    TT->currChar = cc;
-                    CharNode *toDelete = cc;
-                    cc = cc->next;
-                    delete(TT);
-                }
-
-                for (i = 0; i < strlen(newWord); i++) {
-                    insert(TT, newWord[i]);
-                }
-
-                TT->isModified = true;
-                return; 
-            }
-            cc = next;
-        }
-        line = line->down;
-    }
-}
-
 void replaceAll(TabNode *TT, const char *oldWord, const char *newWord) {
     if (TT == NULL || oldWord == NULL || newWord == NULL) return;
 
