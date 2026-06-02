@@ -1,5 +1,6 @@
 #include "rama.h"
 #include "../CALLISTA/callista.h"
+#include "../RASYID/RASYID.h"
 
 void setStructEditor() {
     E.activeTab = NULL;
