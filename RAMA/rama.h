@@ -17,7 +17,7 @@ void resetLine(LineNode *LL);
 void resetChar(CharNode *CC);
 
 //add tab
-void addTab(Editor *E, TabNode *TT);
+void addTab(Editor *E);
 
 //insert 
 void insert(TabNode *TT, char c);
