@@ -145,6 +145,9 @@ void inputCharHandler(TabNode **TT, int c) {
         case 19: // TOMBOL CTRL + S (Save Menanyakan)
             saveFile(*TT);
             break;
+        case 15: // CTRL + O (LoadFile)
+        	loadFile();
+        	break;
         
 
         default:
@@ -420,7 +423,7 @@ void loadFile() {
         printf("[Error] Filename is still empty.\n");
         return;
     }
-
+    
     TabNode *temp = E.activeTab;
     if (temp != NULL) {
         while (temp->prev != NULL) temp = temp->prev;
@@ -447,14 +450,21 @@ void loadFile() {
     
     fclose(check);
 
-    TabNode *resetTab = createTab(fileName);
-    if (resetTab != NULL) {
-        resetTab->isModified = false;  
-        addTab(&E, resetTab);
-        readFile(resetTab, fileName);
-        E.activeTab = resetTab;
-        renderHeader();
-        redrawText(E.activeTab);
+    addTab(&E);
+    TabNode *newTab = E.activeTab;
+	E.activeTab = newTab; 
+    if (newTab != NULL) {
+        int i = 0;
+        while (fileName[i] != '\0' && i < MAX_PATH - 1) {
+            newTab->fileName[i] = fileName[i];
+            i++;
+        }
+        newTab->fileName[i] = '\0';
+        readFile(newTab, fileName);
+        clearScreen();
+        renderHeader(&E);
+        redrawText(newTab);
+        moveCursor(newTab->cursorY, newTab->cursorX);
     } else {
         printf("[Error] Failed to open file: %s\n", fileName);
     }
