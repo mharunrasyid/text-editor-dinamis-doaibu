@@ -32,4 +32,16 @@ void tulisIsiFile(FILE *file, TabNode *TT);
 void saveFile(TabNode *TT);
 void saveAs(TabNode *TT);
 
+//find
+void inputSearchWord();
+int hitungPanjangKata(char *kata);
+int isMatch(CharNode *startChar, char *searchWord);
+void tampilkanHighlight(TabNode *TT, int wordLen);
+void tampilkanMenuFind();
+void scrollUpFind(TabNode *TT);
+void scrollDownFind(TabNode *TT);
+void prosesTombolFind(TabNode *TT, int tombol);
+void findHighlight(TabNode *TT);
+
+
 #endif

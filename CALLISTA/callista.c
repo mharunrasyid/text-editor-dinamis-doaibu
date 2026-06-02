@@ -142,6 +142,9 @@ void inputCharHandler(TabNode **TT, int c) {
         case 1: // TOMBOL CTRL + A (Save As) <--- TAMBAHKAN INI
             saveAs(*TT);
             break;
+        case 6: // CTRL + F
+            findHighlight(*TT); // Pengguna input kata, kata masuk ke E.findKeyword
+            break;
 
         default:
 
