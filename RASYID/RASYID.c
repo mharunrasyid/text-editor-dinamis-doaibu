@@ -1,6 +1,8 @@
 #include <stdio.h>
+#include <string.h>
 #include "../CONFIG.h"
 #include "../RAMA/rama.h"
+#include "../CALLISTA/callista.h"
 #include "RASYID.h"
 
 // DEALOKASI
@@ -312,6 +314,7 @@ void deleteTab(Editor *E) {
         tempLine = nextTempLine;
     }
 
+    // jika tab lebih dari satu, delete tab tsb
     if(TT->prev != NULL || TT->next != NULL) {
         DelokasiTab(TT);
         E->n_tabs--;
@@ -326,5 +329,115 @@ void deleteTab(Editor *E) {
         LL->isNewLine = true;
 
         E->activeTab = TT;
+    }
+}
+
+void replaceV(Editor *E) {
+    clearScreen();
+    renderHeader();
+
+    char* findW = E->findKeyword;
+    char replaceW[100] = {0};
+    printf("\n==== REPLACE ALL ====\n");
+
+    if (findW == NULL || findW[0] == '\0') {
+        printf("Masukkan kata yang ingin dicari : ");
+        if (scanf("%99s", findW) != 1) return; 
+        
+        printf("Masukkan kata pengganti : ");
+        if (scanf("%99s", replaceW) != 1) return;
+    } else {
+        printf("Kata yang dicari : %s\n", findW);
+        printf("Masukkan kata pengganti baru : ");
+        if (scanf("%99s", replaceW) != 1) return;
+    }
+
+    replaceAll(E->activeTab, findW, replaceW);
+
+    clearScreen(); 
+    renderHeader();
+    redrawText(E->activeTab);
+}
+
+void replaceAll(TabNode *TT, char* findW, char* replaceW) {
+    if(TT == NULL || TT->firstLine == NULL || TT->firstLine->firstChar == NULL) return;
+
+    LineNode *currLine = TT->firstLine;
+    CharNode *currChar = TT->firstLine->firstChar;
+    int LfindW = strlen(findW);
+
+    int i = 0;
+
+    while (currLine != NULL) {
+
+        // Karakter diujung baris, maka pindah ke awal karakter baris selanjutnya
+        if (currChar == NULL) {
+            if (currLine->down != NULL) {
+                // jika baris selanjutnya isNewline true, ulang lagi nyari yang samanya
+                if (currLine->down->isNewLine) i = 0;
+                currLine = currLine->down;
+                currChar = currLine->firstChar;
+                continue; 
+            } 
+
+            break;
+        }
+
+        if (currChar->data == findW[i]) {
+            i++;
+
+            // jika sama, replace langsung
+            if (i >= LfindW) {
+                TT->currLine = currLine; 
+                replace(TT, currChar, LfindW, replaceW);
+                
+                currLine = TT->currLine; 
+                
+                if (TT->currChar != NULL) currChar = TT->currChar->next; 
+                else currChar = currLine->firstChar;
+                
+                i = 0;
+                continue;
+            }
+        } else {
+            i = 0;
+
+            // kasus sasaya ketika cari saya,
+            if (currChar->data == findW[0]) i = 1;
+        }
+
+        currChar = currChar->next;
+    }
+}
+
+void replace(TabNode *TT, CharNode *LastCharReplace, int LfindW, char* replaceW) {
+    TT->currChar = LastCharReplace;
+    LineNode *LL = TT->currLine;
+
+    for(int i = 0; i < LfindW; i++) {
+        if (TT->currChar == NULL && LL->firstChar == NULL) break;
+
+        // ketika karakter tinggal 1 dan paling kiri baris serta kondisi baris isNewline true, maka cegah delete (merging)
+        if (LL->length == 1 && LL->isNewLine) {
+            CharNode *targetHapus = TT->currChar;
+
+            LL->firstChar = NULL;
+            LL->lastChar = NULL;
+            LL->length = 0;
+            TT->currChar = NULL;
+
+            TT->cursorX = 1;
+            TT->targetX = TT->cursorX;
+
+            DelokasiChar(targetHapus);
+            break; 
+        } else {
+            delete(TT);
+        }
+    }
+
+    int LreplaceW = strlen(replaceW);
+    for(int i = 0; i < LreplaceW; i++) {
+        insert(TT, replaceW[i]);
     }
 }
