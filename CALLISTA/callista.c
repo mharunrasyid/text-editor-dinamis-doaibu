@@ -149,6 +149,21 @@ void inputCharHandler(Editor *E, TabNode **TT, int c) {
         case 6: // CTRL + F
             findHighlight(*TT); // Pengguna input kata, kata masuk ke E.findKeyword
             break;
+        case 12: // CTRL + L (Replace ALL)
+            replaceV(E);
+            
+            (*TT)->currLine = (*TT)->firstLine;
+            (*TT)->topLine = (*TT)->currLine;
+            (*TT)->currChar = (*TT)->currLine->firstChar->prev;
+
+            (*TT)->cursorX = 1;
+            (*TT)->targetX = (*TT)->cursorX;
+            (*TT)->cursorY = 1;
+            (*TT)->topIndex = (*TT)->cursorY;
+
+            moveCursor(1, 1);
+
+            break;
         case 23: // CTRL + W (Add Tab)
             if(E->n_tabs < MAX_TABS) {
                 addTab(E);
