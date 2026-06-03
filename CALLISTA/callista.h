@@ -18,7 +18,7 @@ void moveCursor(int row, int col);
 void renderHeader();
 void renderScroll(TabNode *TT);
 
-void inputCharHandler(TabNode **TT, int c);
+void inputCharHandler(Editor *E, TabNode **TT, int c);
 void arrowKeyHandler(TabNode **TT,int c);
 
 #endif

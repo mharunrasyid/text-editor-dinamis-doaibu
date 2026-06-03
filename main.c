@@ -20,7 +20,7 @@ int main() {
             c = _getch();
             arrowKeyHandler(TT, c);
         } else {
-            inputCharHandler(TT, c);
+            inputCharHandler(&E, TT, c);
         }
     }
 

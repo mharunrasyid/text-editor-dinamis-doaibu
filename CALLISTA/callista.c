@@ -126,8 +126,12 @@ int isAltPressed() {
 
 // INPUT HANDLER
 
-void inputCharHandler(TabNode **TT, int c) {
+void inputCharHandler(Editor *E, TabNode **TT, int c) {
     switch (c) { 
+        case 4: // Ctrl + D
+            delLine(*TT);
+            redrawText(*TT);
+            break;
         case 13: // TOMBOL ENTER
             newline(*TT);
             redrawText(*TT);
@@ -144,6 +148,35 @@ void inputCharHandler(TabNode **TT, int c) {
             break;
         case 6: // CTRL + F
             findHighlight(*TT); // Pengguna input kata, kata masuk ke E.findKeyword
+            break;
+        case 23: // CTRL + W (Add Tab)
+            if(E->n_tabs < MAX_TABS) {
+                addTab(E);
+                renderHeader();
+                redrawText(E->activeTab);
+            }
+            break;
+        case 17: // CTRL + Q (Prev Tab)
+            if(E->activeTab->prev) {
+                E->activeTab = E->activeTab->prev;
+                E->curr_tab--;
+                renderHeader();
+                redrawText(E->activeTab);
+            }
+            break;
+        
+        case 18: // CTRL + R (Next Tab)
+            if(E->activeTab->next) {
+                E->activeTab = E->activeTab->next;
+                E->curr_tab++;
+                renderHeader();
+                redrawText(E->activeTab);
+            }
+            break;
+        case 5: // CTRL + E (Delete Tab)
+            deleteTab(E);
+            renderHeader();
+            redrawText(E->activeTab);
             break;
 
         default:
