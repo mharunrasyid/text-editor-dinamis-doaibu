@@ -16,4 +16,9 @@ void deleteTab(Editor *E);
 // MERGE
 void merge(LineNode *LL, int gap);
 
+// REPLACE
+void replaceV(Editor *E);
+void replaceAll(TabNode *TT, char* findW, char* replaceW);
+void replace(TabNode *TT, CharNode *LastCharReplace, int LfindW, char* replaceW);
+
 #endif
