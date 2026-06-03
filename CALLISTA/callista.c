@@ -128,6 +128,10 @@ int isAltPressed() {
 
 void inputCharHandler(TabNode **TT, int c) {
     switch (c) { 
+        case 4: // Ctrl + D
+            delLine(*TT);
+            redrawText(*TT);
+            break;
         case 13: // TOMBOL ENTER
             newline(*TT);
             redrawText(*TT);

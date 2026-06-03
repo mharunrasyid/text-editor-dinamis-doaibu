@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "../CONFIG.h"
+#include "../RAMA/rama.h"
 #include "RASYID.h"
 
 // DEALOKASI
@@ -128,6 +129,53 @@ void delete(TabNode *TT) {
     }
 }
 
+void delLine(TabNode *TT) {
+    if (TT == NULL || TT->currLine == NULL) return;
+
+    LineNode *LL = TT->currLine;
+    CharNode *tempCC = LL->firstChar;
+    LL->firstChar = NULL;
+    LL->lastChar = NULL;
+    LL->length = 0;
+
+    while(tempCC != NULL) {
+        CharNode *nextCC = tempCC->next;
+        DelokasiChar(tempCC);
+        tempCC = nextCC;
+    }
+
+    if(LL->up != NULL) {
+        if(LL->down != NULL) {
+            LL->down->up = LL->up;
+            LL->up->down = LL->down;
+            TT->currLine = LL->down;
+        } else {
+            TT->cursorY--;
+            TT->currLine = LL->up;
+            LL->up->down = NULL;            
+        }
+    } else {
+        if(LL->down != NULL) {
+            TT->firstLine = LL->down;
+            TT->currLine = TT->firstLine;
+            TT->topLine = TT->currLine;
+            LL->down-> up = NULL;
+        }
+    }
+
+    if(LL->isNewLine && LL->down != NULL) {
+        LL->down->isNewLine = true;
+    }
+
+    if(LL->up != NULL || LL->down != NULL) {
+        DelokasiLine(LL);
+    }
+
+    TT->currChar = TT->currLine->firstChar;
+    TT->cursorX = 1;
+    TT->targetX = TT->cursorX;
+}
+
 // MERGE
 
 void merge(LineNode *LL, int gap) {
@@ -170,3 +218,28 @@ void merge(LineNode *LL, int gap) {
         }
     }
 }
+
+// void deleteTab(Editor *E) {
+//     TabNode *TT = E->activeTab;
+//     if (TT == NULL) return;
+
+//     if(TT->prev != NULL) {
+//         if(TT->next != NULL) {
+//             TT->prev->next = TT->next;
+//             TT->next->prev = TT->prev;
+//             E->activeTab = TT->next;
+//         } else {
+//             TT->prev->next = NULL;
+//             E->activeTab = TT->prev;
+//         }
+//     } else {
+//         if(TT->next != NULL) {
+//             TT->next->prev = NULL;
+//             E->activeTab = TT->next;
+//         }
+//     }
+
+//     if(TT->prev != NULL || TT->next != NULL) {
+//         E->n_tabs--;
+//     }
+// }
