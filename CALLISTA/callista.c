@@ -129,42 +129,91 @@ int isAltPressed() {
 
 void inputCharHandler(Editor *E, TabNode **TT, int c) {
     switch (c) { 
-        case 1: // CTRL + A (Save As)
-            saveAs(*TT);
+        case 4: // Ctrl + D
+            delLine(*TT);
+            redrawText(*TT);
             break;
         case 13: // TOMBOL ENTER
             newline(*TT);
-            (*TT)->isModified = true;
             redrawText(*TT);
             break;
-        case 8: //CTRL + H (Backspace)
+        case 8:
             delete(*TT);
-            (*TT)->isModified = true;
             redrawText(*TT);    
-			break;    
-        case 18: // CTRL + R (Replace)
-            replaceHandler(TT);
-            break;    
+			break;        
         case 19: // TOMBOL CTRL + S (Save Menanyakan)
             saveFile(*TT);
             break;
-        case 15: // CTRL + O (LoadFile)
-        	loadFile();
-        	break;
-        case 6: // CTRL + F (Find)
-            inputSearchWord();
-            findHighlight(*TT);
+        case 1: // TOMBOL CTRL + A (Save As) <--- TAMBAHKAN INI
+            saveAs(*TT);
             break;
+        case 6: // CTRL + F
+            findHighlight(*TT); // Pengguna input kata, kata masuk ke E.findKeyword
+            break;
+        case 12: // CTRL + L (Replace ALL)
+            replaceV(E);
+            
+            (*TT)->currLine = (*TT)->firstLine;
+            (*TT)->topLine = (*TT)->currLine;
+            (*TT)->currChar = (*TT)->currLine->firstChar->prev;
+
+            (*TT)->cursorX = 1;
+            (*TT)->targetX = (*TT)->cursorX;
+            (*TT)->cursorY = 1;
+            (*TT)->topIndex = (*TT)->cursorY;
+
+            moveCursor(1, 1);
+
+            break;
+        case 23: // CTRL + W (Add Tab)
+            if(E->n_tabs < MAX_TABS) {
+                addTab(E);
+                renderHeader();
+                redrawText(E->activeTab);
+            }
+            break;
+        case 17: // CTRL + Q (Prev Tab)
+            if(E->activeTab->prev) {
+                E->activeTab = E->activeTab->prev;
+                E->curr_tab--;
+                renderHeader();
+                redrawText(E->activeTab);
+            }
+            break;
+        
+        case 18: // CTRL + R (Next Tab)
+            if(E->activeTab->next) {
+                E->activeTab = E->activeTab->next;
+                E->curr_tab++;
+                renderHeader();
+                redrawText(E->activeTab);
+            }
+            break;
+        case 5: // CTRL + E (Delete Tab)
+            deleteTab(E);
+            renderHeader();
+            redrawText(E->activeTab);
+            break;
+        case 15: // Ctrl + O ditekan
+	        loadFile(); 
+	        break;
+	    case 27:
+	    	quitEditor();
+	    	break;
+        	
 
         default:
+
+            // add character
             if (c >= 32 && c <= 126) {
                 if (!isAltPressed()) {
                     insert(*TT, c);
-                    (*TT)->isModified = true;
                     redrawText(*TT);
                 }
             }
+
             break;
+
     }
 }
 
