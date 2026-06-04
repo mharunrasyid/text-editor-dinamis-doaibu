@@ -127,7 +127,7 @@ int isAltPressed() {
 
 // INPUT HANDLER
 
-void inputCharHandler(TabNode **TT, int c) {
+void inputCharHandler(Editor *E, TabNode **TT, int c) {
     switch (c) { 
         case 1: // CTRL + A (Save As)
             saveAs(*TT);
