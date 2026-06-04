@@ -19,7 +19,7 @@ Beberapa fitur yang tersedia pada aplikasi ini antara lain:
 * Scrolling untuk dokumen yang panjang.
 * Fitur pencarian kata (Find).
 * Highlight hasil pencarian.
-* Replace dan Replace All.
+* Replace All.
 * Menyimpan dokumen ke file.
 * Menyimpan dokumen dengan nama baru (Save As).
 * Membuka file yang sudah ada (Load File).
