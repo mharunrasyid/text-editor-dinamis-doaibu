@@ -1,6 +1,5 @@
 #include "rama.h"
 #include "../CALLISTA/callista.h"
-#include "../RASYID/RASYID.h"
 
 void setStructEditor() {
     E.activeTab = NULL;
@@ -370,7 +369,7 @@ void saveAs(TabNode *TT) {
     clearScreen();
     renderHeader(&E);
     moveCursor(1, 1);
-    printf("Masukkan nama file baru (contoh: rama.txt): ");
+    printf("Masukkan nama file baru (contoh: rama.txt): \n");
 
     moveCursor(2, 1);
     printf("Input: ");
@@ -410,4 +409,128 @@ void saveAs(TabNode *TT) {
     fclose(file);
     strcpy(TT->fileName, namaFileBaru);
     moveCursor(TT->cursorY, TT->cursorX);
+}
+
+void inputSearchWord() {
+    clearScreen();
+    renderHeader();
+    moveCursor(2, 1);
+    printf("--- QUICK FIND (MENGGUNAKAN STRUCT EDITOR) ---\n");
+    printf("Masukkan kata yang ingin dicari: ");
+
+    scanf(" %99s", E.findKeyword);
+}
+
+int hitungPanjangKata(char *kata) {
+    int panjang = 0;
+    while (kata[panjang] != '\0') {
+        panjang++;
+    }
+    return panjang;
+}
+
+int isMatch(CharNode *startChar, char *searchWord) {
+    if (searchWord == NULL || searchWord[0] == '\0' || startChar == NULL) return 0;
+    CharNode *temp = startChar;
+    int i = 0;
+    
+    while (searchWord[i] != '\0' && temp != NULL) {
+        if (temp->data != searchWord[i]) {
+            return 0;
+        }
+        i++;
+        temp = temp->next;
+    }
+    return (searchWord[i] == '\0');
+}
+
+void tampilkanHighlight(TabNode *TT, int wordLen) {
+    LineNode *currL = TT->topLine;
+    int screenRow = 1;
+
+    while (currL != NULL && screenRow <= SCREEN_HEIGHT) {
+        moveCursor(screenRow, 1);
+
+        CharNode *currC = currL->firstChar;
+        int highlightCounter = 0;
+
+        while (currC != NULL) {
+            if (highlightCounter == 0 && isMatch(currC, E.findKeyword)) {
+                highlightCounter = wordLen;
+                printf("[");
+            }
+
+            printf("%c", currC->data);
+
+            currC = currC->next;
+
+            if (highlightCounter > 0) {
+                highlightCounter--;
+                if (highlightCounter == 0) {
+                    printf("]");
+                }
+            }
+        }
+
+        currL = currL->down;
+        screenRow++;
+    }
+}
+
+void tampilkanMenuFind() {
+    moveCursor(SCREEN_HEIGHT + 1, 1);
+    printf("Navigasi Layar -> Tekan A: Scroll Up | Tekan B: Scroll Down | Tekan 1: KELUAR.");
+}
+
+void scrollUpFind(TabNode *TT) {
+    int i = 0;
+
+    while (i < SCREEN_HEIGHT && TT->topLine->up != NULL) {
+        TT->topLine = TT->topLine->up;
+        TT->topIndex--;
+        i++;
+    }
+}
+
+void scrollDownFind(TabNode *TT) {
+    int i = 0;
+
+    while (i < SCREEN_HEIGHT && TT->topLine->down != NULL) {
+        TT->topLine = TT->topLine->down;
+        TT->topIndex++;
+        i++;
+    }
+}
+
+void prosesTombolFind(TabNode *TT, int tombol) {
+    if (tombol == 'a' || tombol == 'A') {
+        scrollUpFind(TT);
+    }
+    else if (tombol == 'b' || tombol == 'B') {
+        scrollDownFind(TT);
+    }
+}
+
+void findHighlight(TabNode *TT) {
+    if (TT == NULL || TT->topLine == NULL) return;
+
+    inputSearchWord(); 
+    int wordLen = hitungPanjangKata(E.findKeyword);
+    if (wordLen == 0) return;
+    
+    int tombol = 0;
+
+    while (tombol != '1') {
+        clearScreen();
+        renderHeader();
+        tampilkanHighlight(TT, wordLen);
+        tampilkanMenuFind();
+        moveCursor(TT->cursorY, TT->cursorX);
+        tombol = getch();
+        prosesTombolFind(TT, tombol);
+    }
+    
+    clearScreen();
+    renderHeader();
+    redrawText(TT);
 }

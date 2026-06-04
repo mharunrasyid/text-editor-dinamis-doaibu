@@ -129,6 +129,9 @@ int isAltPressed() {
 
 void inputCharHandler(TabNode **TT, int c) {
     switch (c) { 
+        case 1: // CTRL + A (Save As)
+            saveAs(*TT);
+            break;
         case 13: // TOMBOL ENTER
             newline(*TT);
             (*TT)->isModified = true;
@@ -148,12 +151,9 @@ void inputCharHandler(TabNode **TT, int c) {
         case 15: // CTRL + O (LoadFile)
         	loadFile();
         	break;
-        
-        case 1: // TOMBOL CTRL + A (Save As) <--- TAMBAHKAN INI
-            saveAs(*TT);
-            break;
-        case 6: // CTRL + F
-            findHighlight(*TT); // Pengguna input kata, kata masuk ke E.findKeyword
+        case 6: // CTRL + F (Find)
+            inputSearchWord();
+            findHighlight(*TT);
             break;
 
         default:
@@ -315,6 +315,45 @@ static CharNode *matchWord(CharNode *cc, const char *word) {
 }
 
 // Replace 
+void replaceOne(TabNode *TT, const char *oldWord, const char *newWord) {
+    if (TT == NULL || oldWord == NULL || newWord == NULL) return;
+
+    int oldLen = strlen(oldWord);
+    LineNode *line = TT->firstLine;
+
+    while (line != NULL) {
+        CharNode *cc = line->firstChar;
+
+        while (cc != NULL) {
+            CharNode *next = cc->next;
+
+            if (matchWord(cc, oldWord) != NULL) {
+
+                TT->currLine = line;
+                TT->currChar = cc->prev;
+                TT->cursorX  = TT->currChar == NULL ? 1 : TT->cursorX;
+
+                int i;
+                for (i = 0; i < oldLen; i++) {
+                    TT->currChar = cc;
+                    CharNode *toDelete = cc;
+                    cc = cc->next;
+                    delete(TT);
+                }
+
+                for (i = 0; i < strlen(newWord); i++) {
+                    insert(TT, newWord[i]);
+                }
+
+                TT->isModified = true;
+                return; 
+            }
+            cc = next;
+        }
+        line = line->down;
+    }
+}
+
 void replaceAll(TabNode *TT, const char *oldWord, const char *newWord) {
     if (TT == NULL || oldWord == NULL || newWord == NULL) return;
 
@@ -351,33 +390,21 @@ void replaceAll(TabNode *TT, const char *oldWord, const char *newWord) {
 }
 
 void replaceHandler(TabNode **TT) {
-    if (strlen(E.findKeyword) == 0) {
+    if (strlen(E.findKeyword) == 0) { //
         printf("[Info] Lakukan Find dulu sebelum Replace.\n");
         return;
     }
 
     char newWord[100];
-    char pilihan[4];
 
-    printf("Kata pengganti: ");
+    printf("Masukkan kata pengganti: ");
     fgets(newWord, sizeof(newWord), stdin);
-    newWord[strcspn(newWord, "\n")] = 0;
-
-    printf("Replace (o)ne / (a)ll? : ");
-    fgets(pilihan, sizeof(pilihan), stdin);
-
-    if (pilihan[0] == 'o' || pilihan[0] == 'O') {
-        replaceOne(*TT, E.findKeyword, newWord);
-    } else if (pilihan[0] == 'a' || pilihan[0] == 'A') {
-        replaceAll(*TT, E.findKeyword, newWord);
-    }
-
-    E.findKeyword[0] = '\0';
-
-    renderHeader();
-    redrawText(*TT);
+    newWord[strcspn(newWord, "\n")] = 0; 
+    replaceAll(*TT, E.findKeyword, newWord); 
+    E.findKeyword[0] = '\0'; 
+    renderHeader(); 
+    redrawText(*TT); 
 }
-
 // Load File
 void loadFile() {
     char fileName[MAX_PATH];
