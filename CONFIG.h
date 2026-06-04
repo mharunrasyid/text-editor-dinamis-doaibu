@@ -13,8 +13,8 @@
 #include <ctype.h>
 
 #define MAX_TABS 5
-#define SCREEN_WIDTH 5
-#define SCREEN_HEIGHT 5
+#define SCREEN_WIDTH 80
+#define SCREEN_HEIGHT 25
 #define MAX_PATH 260
 
 typedef struct CharNode CharNode;
