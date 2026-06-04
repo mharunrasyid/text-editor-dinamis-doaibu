@@ -21,4 +21,9 @@ void renderScroll(TabNode *TT);
 void inputCharHandler(Editor *E, TabNode **TT, int c);
 void arrowKeyHandler(TabNode **TT,int c);
 
+void readFile(TabNode *TT, const char *fileName);
+void loadFile();
+
+void quitEditor();
+
 #endif

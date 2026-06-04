@@ -13,7 +13,8 @@ void clearScreen() {
 }
 
 void clearRows(int start, int end, int width) {
-    for(int r = start; r <= end; r++) {
+    int r;
+    for(r = start; r <= end; r++) {
         printf("\033[%d;1H", r);
         printf("%*s", width, "");
     }
@@ -193,6 +194,13 @@ void inputCharHandler(Editor *E, TabNode **TT, int c) {
             renderHeader();
             redrawText(E->activeTab);
             break;
+        case 15: // Ctrl + O ditekan
+	        loadFile(); 
+	        break;
+	    case 27:
+	    	quitEditor();
+	    	break;
+        	
 
         default:
 
@@ -225,7 +233,8 @@ void arrowKeyHandler(TabNode **TT,int c) {
 
                 (*TT)->currChar = NULL;
                 CharNode *temp = (*TT)->currLine->firstChar;
-                for (int i = 1; i < (*TT)->cursorX && temp != NULL; i++) {
+                int i;
+                for (i = 1; i < (*TT)->cursorX && temp != NULL; i++) {
                     (*TT)->currChar = temp;
                     temp = temp->next;
                 }
@@ -246,7 +255,8 @@ void arrowKeyHandler(TabNode **TT,int c) {
 
                 (*TT)->currChar = NULL;
                 CharNode *temp = (*TT)->currLine->firstChar;
-                for (int i = 1; i < (*TT)->cursorX && temp != NULL; i++) {
+                int i;
+                for (i = 1; i < (*TT)->cursorX && temp != NULL; i++) {
                     (*TT)->currChar = temp;
                     temp = temp->next;
                 }
@@ -295,11 +305,8 @@ void arrowKeyHandler(TabNode **TT,int c) {
                 (*TT)->cursorX = 1;
                 (*TT)->targetX = 1;
             }
-            
             break;
         }
-            
-        
         default:
             break;
     }
@@ -309,4 +316,127 @@ void arrowKeyHandler(TabNode **TT,int c) {
     } else {
         moveCursor((*TT)->cursorY, (*TT)->cursorX);
     }
+}
+
+// Read File
+void readFile(TabNode *TT, const char *fileName) {
+    if (TT == NULL) return;
+
+    FILE *file = fopen(fileName, "r");
+    if (file == NULL) {
+        printf("[Error] Gagal membuka file: %s\n", fileName);
+        return;
+    }
+
+    int c;
+    while ((c = fgetc(file)) != EOF) {
+        if (c == '\n') {
+            newline(TT);
+        } else if (c >= 32 && c <= 126) {
+            insert(TT, (char)c);
+        }
+    }
+
+    TT->currLine = TT->firstLine;
+    TT->currChar = NULL;
+    TT->cursorX  = 1;
+    TT->cursorY  = 1;
+    TT->targetX  = 1;
+    TT->topLine  = TT->firstLine;
+    TT->topIndex = 1;
+
+    TT->isModified = false;
+
+    fclose(file);
+}
+
+// Load File
+void loadFile() {
+    char fileName[MAX_PATH];
+    clearScreen();
+    printf("Enter the file name to load: ");
+    fgets(fileName, sizeof(fileName), stdin);
+    fileName[strcspn(fileName, "\n")] = 0;
+
+    if (strlen(fileName) == 0) {
+        printf("[Error] Filename is still empty.\n");
+        return;
+    }
+    
+    TabNode *temp = E.activeTab;
+    if (temp != NULL) {
+        while (temp->prev != NULL) temp = temp->prev;
+        while (temp != NULL) {
+            if (strcmp(temp->fileName, fileName) == 0) {
+                E.activeTab = temp;
+                renderHeader();
+                redrawText(E.activeTab);
+                printf("\n[Info] File '%s' has been opened. Switching tab. \n", fileName);
+                return;
+            }
+            temp = temp->next;
+        }
+    }
+    if (E.n_tabs >= MAX_TABS) {
+        printf("[Error] Maximum tab (%d) reached. Close a tab first.\n", MAX_TABS);
+        return;
+    }
+    FILE *check = fopen(fileName, "r");
+    if (check == NULL) {
+        printf("[Error] File '%s' not found.\n", fileName);
+        return;
+    }
+    
+    fclose(check);
+
+    addTab(&E);
+    TabNode *newTab = E.activeTab;
+	E.activeTab = newTab; 
+    if (newTab != NULL) {
+        int i = 0;
+        while (fileName[i] != '\0' && i < MAX_PATH - 1) {
+            newTab->fileName[i] = fileName[i];
+            i++;
+        }
+        newTab->fileName[i] = '\0';
+        readFile(newTab, fileName);
+        clearScreen();
+        renderHeader(&E);
+        redrawText(newTab);
+        moveCursor(newTab->cursorY, newTab->cursorX);
+    } else {
+        printf("[Error] Failed to open file: %s\n", fileName);
+    }
+}
+
+void quitEditor() {
+    char input[8];
+
+    TabNode *temp = E.activeTab;
+    if (temp != NULL) {
+        while (temp->prev != NULL) temp = temp->prev;
+    }
+
+    bool anyUnsaved = false;
+    TabNode *check = temp;
+    while (check != NULL) {
+        if (check->isModified) {
+            anyUnsaved = true;
+            break;
+        }
+        check = check->next;
+    }
+
+    if (anyUnsaved) {
+        clearScreen();
+        printf("[Warning] Unsaved changes!\n");
+        printf("Proceed to exit? (y/n): ");
+        fgets(input, sizeof(input), stdin);
+        if (input[0] != 'y' && input[0] != 'Y') {
+            return;
+        }
+    }
+    clearScreen();
+    printf("Exiting Doa Ibu's Editor. See you later!\n");
+    exit(0);
 }

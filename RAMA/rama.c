@@ -53,6 +53,8 @@ void resetTab(TabNode *TT) {
     TT->cursorY = 1;
     TT->topIndex = 1;
 
+    TT->isModified = false;
+
     TT->next = NULL;
     TT->prev = NULL;
 }
@@ -76,7 +78,7 @@ void resetChar(CharNode *CC) {
 //addtab
 void addTab(Editor *E) {
 	if(E->n_tabs >= MAX_TABS) return; 
-
+    
     TabNode *TT = AlokasiTab();
     LineNode *LL = AlokasiLine();
 
@@ -354,6 +356,7 @@ void saveFile(TabNode *TT) {
     clearScreen();
     renderHeader(&E);
     redrawText(TT);
+    TT->isModified = false;
     moveCursor(TT->cursorY, TT->cursorX);
 }
 
@@ -365,9 +368,8 @@ void saveAs(TabNode *TT) {
 
     clearScreen();
     renderHeader(&E);
-
     moveCursor(1, 1);
-    printf("Masukkan nama file baru (contoh: rama.txt): ");
+    printf("Masukkan nama file baru (contoh: rama.txt): \n");
 
     moveCursor(2, 1);
     printf("Input: ");
@@ -391,19 +393,21 @@ void saveAs(TabNode *TT) {
         return;
     }
 
-    tulisIsiFile(file, TT);
-    fclose(file);
-
-    int i = 0;
-    while (namaFileBaru[i] != '\0') {
-        TT->fileName[i] = namaFileBaru[i];
-        i++;
+    LineNode *lineSekarang = TT->firstLine;
+    while (lineSekarang != NULL) {
+        CharNode *charSekarang = lineSekarang->firstChar;
+        while (charSekarang != NULL) {
+            fputc(charSekarang->data, file);
+            charSekarang = charSekarang->next;
+        }
+        if (lineSekarang->isNewLine && lineSekarang->down != NULL) {
+            fputc('\n', file);
+        }
+        lineSekarang = lineSekarang->down;
     }
-    TT->fileName[i] = '\0';
 
-    clearScreen();
-    renderHeader(&E);
-    redrawText(TT);
+    fclose(file);
+    strcpy(TT->fileName, namaFileBaru);
     moveCursor(TT->cursorY, TT->cursorX);
 }
 
